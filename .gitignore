@@ -1,0 +1,8 @@
+databases/
+errors/
+uploads/
+*.bak
+*.1
+*.zip
+*.tar.gz
+*.pyc
