@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>iToggle</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <link href="css/style.css" media="screen" type="text/css" rel="stylesheet" />
+        <!--[if IE 8]>
+            <link href="css/style-ie8.css" media="screen" type="text/css" rel="stylesheet" />
+        <![endif]-->
+    </head>
+    <body>
+
+        <label>Do you like iOS?
+            <input type="checkbox" class="iToggle" data-label-on="of course!" data-label-off="no" checked="checked" />
+        </label>
+
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script type="text/javascript" src="itoggle.jquery.js"></script>
+        <script>
+            $(function() {
+                $('input[type=checkbox]').iToggle();
+            });
+        </script>
+    </body>
+</html>

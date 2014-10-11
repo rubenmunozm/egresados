@@ -1,0 +1,36 @@
+{{extend 'layout.html'}}
+<!-- Carousel codigo para la Vista
+    ================================================== -->
+    <div id="myCarousel" class="carousel slide">
+      <div class="carousel-inner padding4">
+
+        
+            <div class="item active"> <!--  1 -->
+            
+              <div class="item"> <!--  1 -->
+          
+              <img src="{{=URL('static/images','customer-service-banner.png')}}" alt="">
+              <div class="container">
+              <div class="carousel-caption">
+                <h1 style="text-shadow: 2px 2px 7px rgba(150, 150, 150, 1);">HOLAAA</h1>
+                <p></p>
+              </div>
+            </div>            
+          </div>
+                 
+
+      </div>
+      <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
+      <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+    </div><!-- /.carousel -->
+
+
+
+
+
+<script type="text/javascript">
+  $(function(){
+      $('.carousel').carousel({
+        interval: 3667
+      });
+});</script>

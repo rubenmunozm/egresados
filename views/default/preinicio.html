@@ -1,0 +1,99 @@
+{{extend 'layout.html'}}
+<style type="text/css">
+    body{
+    background-image: url("{{=URL('static','images/red5.jpg')}}");
+    font-family: 'Ubuntu', arial, sans-serif;
+    background-size: 100% auto;
+    }
+
+    .hola{
+    	position: relative;
+    	top: -50px;
+    	background-color: white;
+    	border-radius: 22px 22px 22px 22px;
+		-moz-border-radius: 22px 22px 22px 22px;
+		-webkit-border-radius: 22px 22px 22px 22px;
+		border: 3px solid #c4c4c4;
+		-webkit-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+    }
+    .cuadro{
+    	position: relative;
+    	top: -10px;
+    }
+    .fotin{
+      position: relative;
+      top: 70px;
+      left: 60px;
+    }
+</style>
+
+<div class="container-fluid hola">
+  <div class="row-fluid">
+
+    <div class="span7"><br>
+
+    <h1>Hola {{=auth.user.first_name}},<br>Este es el Menú<br> <small>Selecciona una opción a continuación</small></h1>
+    <hr>
+    
+    {{if row:}}
+        {{if row['primera_completa'] == False:}}
+
+            {{=A(SPAN(_class="icon-plus-sign"),T("Agregar Información por Primera Vez"), _href=URL('default','inicio',user_signature=True), _class='btn btn-large btn-block btn-success', _style='margin-top: 1em')}}
+            <p class="lead">Registrar Información Personal, de Egreso, y Laboral</p>
+            <br>
+            {{=A(SPAN(_class="icon-ok"),T("Cerrar Sesión"), _href="/egresados/default/user/logout?_next=/egresados/default/index", _class='btn btn-large btn-block btn-danger', _style='margin-top: 1em')}}
+            <br><br><br><br><br><br><br><br><br>
+
+        {{else:}}
+
+            {{=A(SPAN(_class="icon-plus-sign"),T("Agregar Información por Primera Vez"), _class='btn btn-large btn-block btn-success disabled', _style='margin-top: 1em')}}
+            <p class="lead">Información Personal, de Egreso, y Laboral: Registrada</p>
+          
+            {{=A(SPAN(_class="icon-refresh"),T("Actualizar Datos Personales/Egreso"), _href=URL('default','actualizar',user_signature=True), _class='btn btn-large btn-block btn-primary', _style='margin-top: 1em')}}
+            {{if titulado:}}
+              {{if titulado['titulacion'] == 'NO':}}
+                <p class="lead">¿Aún no te has titulado?</p>
+              {{else:}}
+                {{if posgraduado['posgrado'] == 'NO':}}
+                <p class="lead">Licenciatura: Titulado &nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp; Aún no cursas un Posgrado </p>
+                {{else:}}
+                <p class="lead">Licenciatura: Titulado &nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp; Último Posgrado: {{=posgraduado.posgrado_tipo.tipos}} </p>
+                {{pass}}
+              {{pass}}
+            {{pass}}
+            
+            
+            {{=A(SPAN(_class="icon-refresh"),T("Actualizar Empleo"), _href=URL('default','actualizar_empleo',user_signature=True), _class='btn btn-large btn-block btn-info', _style='margin-top: 1em')}}
+            {{if empleado:}}
+              {{if empleado['laboralmente_activo'] == 'SI':}}
+                <p class="lead">Actualmente trabajas en {{=empleado.nombre_empresa}}</p>
+              {{else:}}<p class="lead">Actualmente no estas trabajando</p>{{pass}}
+            {{else:}}
+              <p class="lead">¿Empleado o Desempleado?</p>
+            {{pass}}
+
+            {{=A(SPAN(_class="icon-ok"),T("Cerrar Sesión"), _href="/egresados/default/user/logout?_next=/egresados/default/index", _class='btn btn-large btn-block btn-danger', _style='margin-top: 1em')}}<br>
+
+        {{pass}}
+
+    {{else:}}
+            {{=A(SPAN(_class="icon-plus-sign"),T("Agregar Información por Primera Vez"), _href=URL('default','inicio',user_signature=True), _class='btn btn-large btn-block btn-success', _style='margin-top: 1em')}}
+            <p class="lead">Registrar Información Personal, de Egreso, y Laboral</p>
+            <br>
+            {{=A(SPAN(_class="icon-ok"),T("Cerrar Sesión"), _href="/egresados/default/user/logout?_next=/egresados/default/index", _class='btn btn-large btn-block btn-danger', _style='margin-top: 1em')}}
+            <br><br><br><br><br><br><br><br>
+    {{pass}}
+	</div>
+    
+    
+    
+    <div class="span5 hidden-phone">
+      <!--Body content--><br><br>
+      <img src="{{=URL('static/images','people.jpg')}}" style="width: 420px; height: 440px;" class="img-rounded">
+    </div>
+
+
+   
+</div>

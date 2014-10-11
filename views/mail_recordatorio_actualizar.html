@@ -1,0 +1,44 @@
+<html>
+    <body>
+        <u><h2>Estimado {{=first_name}}, egresado de Ingeniería UVM Hermosillo:</h2></u>
+       
+        <br>Queremos mantenernos actualizados con lo que estás haciendo.
+        <br>Verifica si la información que tenemos tuya está actualizada:
+        <br>
+        {{if titulacion == 'NO':}}
+        <br><b>- Licenciatura: Aún no te has titulado</b>
+        {{else:}}
+        <br><b>- Licenciatura: Ya estás titulado.</b>
+        {{pass}}
+
+        <br>
+        {{if posgrado == 'NO':}}
+        <br><b>- Aún no cursas un posgrado</b>
+        {{else:}}
+        <br><b>- Último Posgrado: {{=posgrado_tipo}}</b>
+        {{pass}}
+
+        <br>
+
+        {{if laboralmente_activo == 'SI':}}
+        <br><b>- Actualmente trabajas en {{=nombre_empresa}}</b>
+        {{else:}}
+        <br><b>- Actualmente no estas trabajando</b>
+        {{pass}}
+        <br>
+        <br>Te agradeceríamos que en caso de que tu información haya cambiado la actualices, dando click en el siguiente link:
+        <br>Usando tu matrícula ({{=matricula}}) como Nombre de Usuario y Contraseña (a menos que anteriormente la hayas cambiado).
+        
+        <br><br><a href="http://localhost/egresados/default/index" target="_blank">www.egresadosuvm.edu</a> 
+       <br><br>
+ 
+       Muchas gracias por tu cooperación.
+       <br>
+       Éxito,<b><i></i></b>
+       <br>
+       
+       
+       <br><br><b>ATTE</b><br>
+       <u>Dr. Armando Ayala Corona</u><br><br>
+   </body>
+</html>

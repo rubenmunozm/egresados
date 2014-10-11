@@ -1,0 +1,55 @@
+{{extend 'layout.html'}}
+
+<style type="text/css">
+    body{
+    background-image: url("{{=URL('static','images/red5.jpg')}}");
+    font-family: 'Ubuntu', arial, sans-serif;
+    background-size: 100% auto;
+    }
+
+    .hola{
+      position: relative;
+      top: -50px;
+      background-color: white;
+      border-radius: 22px 22px 22px 22px;
+    -moz-border-radius: 22px 22px 22px 22px;
+    -webkit-border-radius: 22px 22px 22px 22px;
+    border: 3px solid #c4c4c4;
+    -webkit-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+    }
+    .cuadro{
+      position: relative;
+      top: -10px;
+    }
+</style>
+
+<div class="container-fluid hola">
+  <div class="row-fluid">
+
+    <div class="span12"><br>
+    <h1>¿Cuentas actualmente con un Empleo?<br> <small>Si tiene un nuevo empleo marque 'SI' y a continuación registre la información<br>Si por el momento no tiene empleo, marque 'NO' y de click en Siguiente</small></h1>
+      
+    
+      
+
+    </div>
+    
+
+  </div><br><br>
+    
+    <div class="row-fluid">
+
+    <div class="span6">
+      {{=A(SPAN(_class="icon-ok"),T(" Si tengo Empleo"), _href=URL('default','nuevo_empleo',user_signature=True), _class='btn btn-large btn-block btn-success', _style='margin-top: 1em')}}
+    </div>
+    <div class="span6">
+      {{=A(SPAN(_class="icon-remove"),T(" No tengo Empleo"), _href=URL('default','post_nr_menu_actualdesempleado',user_signature=True), _class='btn btn-large btn-block btn-danger', _style='margin-top: 1em')}}
+
+    </div>
+
+   </div>
+   <br>
+</div>
+

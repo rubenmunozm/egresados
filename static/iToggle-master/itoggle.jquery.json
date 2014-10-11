@@ -1,0 +1,38 @@
+{
+    "name": "itoggle",
+    "title": "iToggle",
+    "description": "Replace your checkbox with this toggle button à la iOS. This toggler replaces the checkbox (which gets hidden far away from the viewport). Attributes on the original checkbox define the labels appearing in the toggler, but you can also define theses labels globally. Accessibility is kept, the toggler can be switched with the space bar as a normal checkbox and is outlined when focused.",
+    "keywords": [
+        "form",
+        "checkbox",
+        "toggle",
+        "toggler",
+        "iOS",
+        "input",
+        "ui"
+    ],
+    "version": "1.0.6",
+    "author": {
+        "name": "Sébastien Roch",
+        "url": "https://github.com/sebastien-roch"
+    },
+    "maintainers": [
+        {
+            "name": "Sébastien Roch",
+            "url": "https://github.com/sebastien-roch"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/sebastien-roch/iToggle/blob/1.0.0/LICENSE"
+        }
+    ],
+    "bugs": "https://github.com/sebastien-roch/iToggle/issues",
+    "homepage": "https://github.com/sebastien-roch/iToggle",
+    "docs": "https://github.com/sebastien-roch/iToggle",
+    "demo": "http://jsfiddle.net/PC4aN/14/",
+    "dependencies": {
+        "jquery": ">=1.7.1"
+    }
+}

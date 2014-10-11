@@ -1,0 +1,44 @@
+# coding: utf8
+import uuid
+jq_ui = URL('static','plugin_jqueryui/jquery-ui-1.8.2/ui/jquery-ui.js')
+default_theme = URL('static','plugin_jqueryui/jquery-ui-themes-1.8.2/themes/ui-darkness/jquery-ui.css')
+
+class UISliderWidget(object):
+    """
+       Represent a numeric value using the jQueryUI slider  
+       based on http://jqueryui.com/demos/slider/     
+    """
+    def __init__(self, ui_js = jq_ui, 
+                       ui_css = default_theme, 
+                       width=200,
+                       min = 0, max = 100, step = 1, 
+                       orientation = 'horizontal',
+                       animate = True,
+                       disabled = False):
+        if not ui_js in response.files:
+            response.files.append(ui_js)
+        if not ui_css in response.files:
+            response.files.append(ui_css)
+        self.width = width
+        self.min = min
+        self.max = max
+        self.step = step
+        self.orientation = orientation
+        self.animate = animate
+        self.disabled = disabled
+    def widget(self, f, v):
+        uid = str(uuid.uuid4())[:8]
+        opts = 'min: %s, max: %s, step: %s, orientation: "%s", animate: %s, disabled: %s' % \
+                (self.min, self.max, self.step, self.orientation, 
+                 str(self.animate).lower(),str(self.disabled).lower())
+        wrapper = DIV(_id="slider_wrapper_%s" % uid,
+                      _style="width: %spx;text-align:center;" % self.width)
+        inp = SQLFORM.widgets.string.widget(f,v)
+        sld = DIV(_id='slider_' + inp['_id'] + '_%s' % uid)
+        sldval = SPAN(inp['_value'],_id=sld['_id']+'_val')
+        scr1 = "jQuery('#%s').hide();" % inp['_id']
+        scr2 = "jQuery('#%s').val(ui.value);jQuery('#%s').text(ui.value);" % (inp['_id'], sldval['_id'])
+        jqscr = SCRIPT(scr1,"jQuery('#%s').slider({value: %s, stop: function(event, ui) {%s}, %s});" % \
+                        (sld['_id'], inp['_value'],scr2, opts),_type="text/javascript")
+        wrapper.components.extend([sld,sldval,inp,jqscr])
+        return wrapper

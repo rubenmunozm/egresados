@@ -1,0 +1,296 @@
+# coding: utf8
+from gluon import *
+from gluon.storage import Storage
+from gluon.globals import Response as response
+import copy
+
+import uuid
+import datetime
+from gluon.debug import dbg
+  
+# For referencing static and views from other application
+import os
+APP = os.path.basename(os.path.dirname(os.path.dirname(__file__)))
+
+star_rating_js = URL(APP, 'static','plugin_jqueryui/stars/jquery.ui.stars.js')
+jq_ui = URL(APP, 'static','plugin_jqueryui/jquery-ui-1.8.2/ui/jquery-ui.js')
+multi_select_js = URL(APP, 'static','plugin_jqueryui/multiselect/jquery.multiSelect.js')
+select2_js = URL(APP, 'static','plugin_jqueryui/select2-3.4.5/select2.js')
+select2_js_locale = URL(APP, 'static','plugin_jqueryui/select2-3.4.5/select2_locale_es.js')
+
+itoggle_js = URL(APP,'static','iToggle-master/itoggle.jquery.js')
+itoggle_css = URL(APP,'static','iToggle-master/css/style.css')
+
+select2_css = URL(APP, 'static', 'plugin_jqueryui/select2-3.4.5/select2.css')
+star_rating_css = URL(APP, 'static','plugin_jqueryui/stars/jquery.ui.stars.css')
+multi_select_css = URL(APP, 'static','plugin_jqueryui/multiselect/jquery.multiSelect.css')
+
+darkness = URL(APP, 'static','plugin_jqueryui/jquery-ui-themes-1.8.2/themes/ui-darkness/jquery-ui.css')
+redmond = URL(APP, 'static','plugin_jqueryui/jquery-ui-themes-1.8.2/themes/redmond/jquery-ui.css')
+eggplant = URL(APP, 'static','plugin_jqueryui/jquery-ui-themes-1.8.2/themes/eggplant/jquery-ui.css')
+smoothness = URL(APP, 'static','plugin_jqueryui/jquery-ui-themes-1.8.2/themes/smoothness/jquery-ui.css')
+lefrog = URL(APP, 'static','plugin_jqueryui/jquery-ui-themes-1.8.2/themes/le-frog/jquery-ui.css')
+
+class iToggleWidget(object):
+    
+    def __init__(self, ui_js = jq_ui, 
+                       it_js = itoggle_js, 
+                       it_css = itoggle_css,
+                       default_off= 'OFF',
+                       default_on = 'ON'):
+        dbg.set_trace() # stop here!
+        if not ui_js in current.response.files:
+            current.response.files.append(ui_js)
+        if not it_js in current.response.files:
+            current.response.files.append(it_js)
+        if not it_css in current.response.files:
+            current.response.files.append(it_css)
+        self.default_off = default_off
+        self.default_on = default_on
+    def widget(self, f, v):
+        
+        uid = str(uuid.uuid4())[:8]
+        #uid='9999'
+        opts = 'defaultOffLabel: %s, defaultOnLabel: %s' % (str(self.default_off).lower(),
+                                                  str(self.default_on).lower())
+        wrapper = DIV(SPAN(_id="itoggle-cap"),
+                      _id="itoggle-wrapper_%s" % uid)
+        inp = SQLFORM.widgets.boolean.widget(f,v)
+        scr = SCRIPT('''$(document).ready(function() { \
+                          $.fn.iToggle.defaultOptions = { \
+                            defaultOffLabel: '%s', defaultOnLabel: '%s' }; \
+                          $("#%s_%s").iToggle(); \
+                      });''' % (str(self.default_off).lower(),
+                                 str(self.default_on).lower(),f._tablename,f.name)) 
+        wrapper.append(inp)
+        wrapper.append(scr)#$('input[type=checkbox]').iToggle();
+        
+        return wrapper
+
+class UISliderWidget(object):
+    """
+       Represent a numeric value using the jQueryUI slider  
+       based on http://jqueryui.com/demos/slider/     
+    """
+    def __init__(self, ui_js = jq_ui, 
+                       ui_css = darkness, 
+                       width=200,
+                       min = 0, max = 100, step = 1, 
+                       orientation = 'horizontal',
+                       animate = True,
+                       disabled = False):
+        if not ui_js in current.response.files:
+            current.response.files.append(ui_js)
+        if not ui_css in current.response.files:
+            current.response.files.append(ui_css)
+        self.width = width
+        self.min = min
+        self.max = max
+        self.step = step
+        self.orientation = orientation
+        self.animate = animate
+        self.disabled = disabled
+    def widget(self, f, v):
+        uid = str(uuid.uuid4())[:8]
+        opts = 'min: %s, max: %s, step: %s, orientation: "%s", animate: %s, disabled: %s' % \
+                (self.min, self.max, self.step, self.orientation, 
+                 str(self.animate).lower(),str(self.disabled).lower())
+        wrapper = DIV(_id="slider_wrapper_%s" % uid,
+                      _style="width: %spx;text-align:center;" % self.width)
+        inp = SQLFORM.widgets.string.widget(f,v)
+        sld = DIV(_id='slider_' + inp['_id'] + '_%s' % uid)
+        sldval = SPAN(inp['_value'],_id=sld['_id']+'_val')
+        scr1 = "jQuery('#%s').hide();" % inp['_id']
+        scr2 = "jQuery('#%s').val(ui.value);jQuery('#%s').text(ui.value);" % (inp['_id'], sldval['_id'])
+        jqscr = SCRIPT(scr1,"jQuery('#%s').slider({value: %s, stop: function(event, ui) {%s}, %s});" % \
+                        (sld['_id'], inp['_value'],scr2, opts),_type="text/javascript")
+        wrapper.components.extend([sld,sldval,inp,jqscr])
+        return wrapper
+
+#widget_slider = UISliderWidget(min=0, max=100, step=1,
+#                            orientation='horizontal')
+
+
+    
+class Select2Widget(object):
+    """
+       A web2py multi-select widget based on this jQuery plugin:
+       http://abeautifulsite.net/2008/04/jquery-multiselect/
+       Download the plugin and extract to a folder called
+        'multiselect' in your static folder.
+       Pass the urls of the plugin javascript and css to __init__
+       Based on http://web2pyslices.com/main/slices/take_slice/70
+    """
+    def __init__(self, js = select2_js, 
+                       css = select2_css):
+        if not js in current.response.files:
+            current.response.files.append(js)
+        if not css in current.response.files:
+            current.response.files.append(css)
+    def widget(self, f, v):       
+        d_id = "select-" + str(uuid.uuid4())[:8]
+        wrapper = DIV(_id=d_id)
+        inp = SQLFORM.widgets.options.widget(f,v)
+        #inp['_multiple'] = 'multiple'
+        inp['_style'] = 'min-width: 220px;' #% (len(f.name) * 20 + 50)
+        if v:
+            if not isinstance(v,list): v = str(v).split('|')
+            opts = inp.elements('option')
+            for op in opts:
+                if op['_value'] in v:
+                    op['_selected'] = 'selected'            
+        scr = SCRIPT('$(document).ready(function() { $("#' + f._tablename + '_' + f.name +'").select2(); });')
+        wrapper.append(inp)
+        wrapper.append(scr)
+        if current.request.vars.get(inp['_id']+'[]',None):
+            var = current.request.vars[inp['_id']+'[]']
+            if not isinstance(var,list): var = [var]
+            current.request.vars[f.name] = '|'.join(var)
+            del current.request.vars[inp['_id']+'[]']
+        return wrapper
+
+#widget_searchselect = Select2Widget()
+
+class Select2MultiselectWidget(object):
+    """
+       A web2py multi-select widget based on this jQuery plugin:
+       http://abeautifulsite.net/2008/04/jquery-multiselect/
+       Download the plugin and extract to a folder called
+        'multiselect' in your static folder.
+       Pass the urls of the plugin javascript and css to __init__
+       Based on http://web2pyslices.com/main/slices/take_slice/70
+    """
+    def __init__(self, js = select2_js, js_locale = select2_js_locale, 
+                       css = select2_css, maximumSelectionSize=99999):
+        if not js in current.response.files:
+            current.response.files.append(js)
+        if not js_locale in current.response.files:
+            current.response.files.append(select2_js_locale)
+        if not css in current.response.files:
+            current.response.files.append(css)
+        self.maximumSelectionSize = maximumSelectionSize
+    def widget(self, f, v):       
+        d_id = "select-" + str(uuid.uuid4())[:8]
+        wrapper = DIV(_id=d_id)
+        inp = SQLFORM.widgets.options.widget(f,v)
+        inp['_multiple'] = 'multiple'
+        inp['_style'] = 'min-width: 220px;' #% (len(f.name) * 20 + 50)
+        if v:
+            if not isinstance(v,list): v = str(v).split('|')
+            opts = inp.elements('option')
+            for op in opts:
+                if op['_value'] in v:
+                    op['_selected'] = 'selected'
+        scr = SCRIPT('$(document).ready(function() { $("#' + f._tablename + '_' + f.name +'").select2({\
+                      maximumSelectionSize: ' +  str(self.maximumSelectionSize) + ' \
+                  }); });')
+        
+        wrapper.append(inp)
+        wrapper.append(scr) 
+        if v:
+            cadena = ''
+            contador = 0
+            for elemento in v:
+                if contador == 0:
+                    cadena = cadena +"'"+ str(elemento) + "'"
+                    contador += 1
+                else:
+                    cadena = cadena + ", '"+ str(elemento) + "'"
+            scr2 = SCRIPT('''$("#''' + f._tablename + '_' + f.name + '''").val([''' + cadena +''']).trigger("change");''' )
+            wrapper.append(scr2)
+
+        if current.request.vars.get(inp['_id']+'[]',None):
+            var = current.request.vars[inp['_id']+'[]']
+            if not isinstance(var,list): var = [var]
+            current.request.vars[f.name] = '|'.join(var)
+            del current.request.vars[inp['_id']+'[]']
+        return wrapper
+
+#widget_searchmultiselect = Select2MultiselectWidget(maximumSelectionSize=2)
+
+
+class DropdownDateWidget():
+    """
+       A date selector that uses html select inputs
+       Based on http://web2pyslices.com/main/slices/take_slice/25
+    """
+    def __init__(self, days = None, 
+                 months = None, years = None):
+        if not days:
+            days = [OPTION(str(i).zfill(2)) for i in range(1,32)]
+        self.days = days
+        if not months:
+            months = [OPTION(datetime.date(2008,i,1).strftime('%B')
+                        ,_value=str(i).zfill(2)) for i in range(1,13)]
+        self.months = months
+        if not years:            
+            years = [OPTION(i) for i in range(current.request.now.year-50,
+                                              current.request.now.year+50)]
+        self.years = years
+    def widget(self, f, v):
+        dtval = v if v else current.request.now.isoformat()
+        y,m,d= str(dtval).split("-") 
+        dt = SQLFORM.widgets.string.widget(f,v)
+        uid = str(uuid.uuid4())[:8]
+        dayid = dt['_id'] + '_day_' + uid
+        monthid = dt['_id'] + '_month_' + uid
+        yearid = dt['_id'] + '_year_' + uid
+        wrapper = DIV(_id=dt['_id']+"_wrapper_" + uid)
+        day = SELECT(self.days, value=d,_id=dayid)
+        month = SELECT(self.months, value=m,_id=monthid)
+        year = SELECT(self.years,
+                     value=y,_id=yearid)
+        setval = "var curval = jQuery('#%s').val();if(curval){var pcs = curval.split('/');"\
+                 "var dd = pcs[2];var mm = pcs[1];var yy = pcs[0];"\
+                 "jQuery('#%s').val(dd);jQuery('#%s').val(mm);jQuery('#%s').val(yy);}" % \
+                                  (dt['_id'], dayid , monthid, yearid)
+        combined = "jQuery('#%s').val()+'/'+jQuery('#%s').val()+'/'+jQuery('#%s').val()" % \
+                                          (yearid, monthid, dayid)
+        combine = "jQuery('#%s').val(%s);" % (dt['_id'],combined)
+        onchange = "jQuery('#%s select').change(function(e){%s});" % \
+                                             (wrapper['_id'], combine)
+        jqscr = SCRIPT("jQuery('#%s').hide();%s%s" % (dt['_id'],setval,onchange))
+        wrapper.components.extend([month,day,year,dt,jqscr])
+        return wrapper 
+
+#widget_dropdowndate = DropdownDateWidget()   
+
+
+    
+class StarRatingWidget(object):
+    """
+       Allows integer input using a star rating
+       Download the jQuery plugin from:
+       http://orkans-tmp.22web.net/star_rating/index.html
+       Extract to a folder named 'stars' in your static folder
+    """
+    def __init__(self, ui_js = jq_ui, 
+                       stars_js = star_rating_js, 
+                       stars_css = star_rating_css,
+                       single_vote = False,
+                       disabled = False):
+        if not ui_js in current.response.files:
+            current.response.files.append(ui_js)
+        if not stars_js in current.response.files:
+            current.response.files.append(stars_js)
+        if not stars_css in current.response.files:
+            current.response.files.append(stars_css)
+        self.disabled = disabled
+        self.single_vote = single_vote
+    def widget(self, f, v):
+        uid = str(uuid.uuid4())[:8]
+        opts = 'disabled: %s, oneVoteOnly: %s' % (str(self.disabled).lower(),
+                                                  str(self.single_vote).lower())
+        wrapper = DIV(SPAN(_id="stars-cap"),
+                      _id="stars-wrapper_%s" % uid)
+        from gluon.sqlhtml import OptionsWidget
+        inp = OptionsWidget.widget(f,v)
+        scr = SCRIPT('jQuery("#stars-wrapper_%s").stars('\
+                     '{inputType: "select", %s});' % (uid, opts))
+        scr2 = SCRIPT('$("form").submit(function() {$("[name=%s]").removeAttr("disabled");});'% f.name)
+        wrapper.append(inp)
+        wrapper.append(scr)
+        wrapper.append(scr2)
+        return wrapper
+
+#widget_stars = StarRatingWidget()

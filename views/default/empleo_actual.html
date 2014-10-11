@@ -1,0 +1,195 @@
+{{extend 'layout.html'}}
+
+<style type="text/css">
+    body{
+    background-image: url("{{=URL('static','images/red5.jpg')}}");
+    font-family: 'Ubuntu', arial, sans-serif;
+    background-size: 100% auto;
+    }
+
+    .hola{
+      position: relative;
+      top: -50px;
+      background-color: white;
+      border-radius: 22px 22px 22px 22px;
+    -moz-border-radius: 22px 22px 22px 22px;
+    -webkit-border-radius: 22px 22px 22px 22px;
+    border: 3px solid #c4c4c4;
+    -webkit-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+    }
+    .cuadro{
+      position: relative;
+      top: -10px;
+    }
+</style>
+
+<div class="container-fluid hola">
+  <div class="row-fluid">
+
+    <div class="span7 "><br>
+    <h1>Información de Empleo Actual<br> <small>Al terminar, Click en Siguiente para continuar</small></h1>
+      
+    
+      
+
+    </div>
+    <div class="span5">
+      <!--Body content--><br><br>
+      <ul class="nav nav-pills">
+      <li >
+        <a >Paso 1</a>
+      </li>
+      <li ><a>Paso 2</a></li>
+      <li class="active"><a>Paso 3</a></li>
+    </ul>
+    </div>
+
+  </div><br><br>
+    
+    <div class="row-fluid">
+
+    <div class="span7">
+    
+      {{=form}}<br>
+    </div>
+    <div class="span5">
+      <!--Body content-->
+      <li class="span10 cuadro">
+                <div class="thumbnail">
+                {{if anuncios:}}
+                <br>
+                  <img src="{{=URL('download',args=anuncios.imagen)}}" alt="">
+                  <div class="caption">
+                    
+                    <h3 align="center">{{=anuncios.titulo_anuncio}}</h3>
+                    <p>{{=anuncios.anuncio}}</p>
+                  </div>
+                {{else:}}
+                  <br>
+                  <img data-src="holder.js/300x200" alt="300x200" src="" style="width: 300px; height: 200px;">
+                  <div class="caption">
+                    <h3 align="center">Anuncio/Publicidad 3</h3>
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                  </div>
+                  {{pass}}
+
+                </div>
+              </li>
+    </div>
+
+   </div>
+   <br>
+</div>
+
+<script>
+$('form').submit(function(e){
+    if(!confirm("Verifica tu Información"))
+    {
+      
+      e.preventDefault();
+      return;
+    } 
+
+
+});
+
+</script>
+
+<script>
+jQuery(document).ready(function(){
+   if(jQuery('#laboralmente_activoSI').prop('checked')){
+        jQuery('#empleos_nombre_empresa__row').show();
+        jQuery('#empleos_tipo_empresa__row').show();
+        jQuery('#empleos_giro_empresa__row').show();
+        jQuery('#empleos_fecha_inicio__row').show();
+        jQuery('#empleos_telef_empresa__row').show();
+        jQuery('#empleos_empleo_relacionado__row').show();
+        
+   }
+   else
+   {
+    jQuery('#empleos_nombre_empresa__row').hide();
+    jQuery('#empleos_tipo_empresa__row').hide();
+    jQuery('#empleos_giro_empresa__row').hide();
+    jQuery('#empleos_fecha_inicio__row').hide();
+    jQuery('#empleos_telef_empresa__row').hide();
+    jQuery('#empleos_empleo_relacionado__row').hide();
+    }
+   jQuery('#laboralmente_activoSI').change(function()
+   {
+        if(jQuery('#laboralmente_activoSI').prop('checked')){
+            jQuery('#empleos_nombre_empresa__row').show();
+            jQuery('#empleos_tipo_empresa__row').show();
+            jQuery('#empleos_giro_empresa__row').show();
+            jQuery('#empleos_fecha_inicio__row').show();
+            jQuery('#empleos_telef_empresa__row').show();
+            jQuery('#empleos_empleo_relacionado__row').show();
+        }
+        else {
+          jQuery('#empleos_nombre_empresa__row').hide();
+          jQuery('#empleos_tipo_empresa__row').hide();
+          jQuery('#empleos_giro_empresa__row').hide();
+          jQuery('#empleos_fecha_inicio__row').hide();
+          jQuery('#empleos_telef_empresa__row').hide();
+          jQuery('#empleos_empleo_relacionado__row').hide();
+        }
+    });
+});
+</script>
+
+<script>
+jQuery(document).ready(function(){
+   if(jQuery('#laboralmente_activoNO').prop('checked')){
+        jQuery('#empleos_nombre_empresa__row').hide();
+          jQuery('#empleos_tipo_empresa__row').hide();
+          jQuery('#empleos_giro_empresa__row').hide();
+          jQuery('#empleos_fecha_inicio__row').hide();
+          jQuery('#empleos_telef_empresa__row').hide();
+          jQuery('#empleos_empleo_relacionado__row').hide();
+        
+   }
+   else
+   {
+    jQuery('#empleos_nombre_empresa__row').show();
+    jQuery('#empleos_tipo_empresa__row').show();
+    jQuery('#empleos_giro_empresa__row').show();
+    jQuery('#empleos_fecha_inicio__row').show();
+    jQuery('#empleos_telef_empresa__row').show();
+    jQuery('#empleos_empleo_relacionado__row').show();
+    }
+   jQuery('#laboralmente_activoNO').change(function()
+   {
+        if(jQuery('#laboralmente_activoNO').prop('checked')){
+            jQuery('#empleos_nombre_empresa__row').hide();
+          jQuery('#empleos_tipo_empresa__row').hide();
+          jQuery('#empleos_giro_empresa__row').hide();
+          jQuery('#empleos_fecha_inicio__row').hide();
+          jQuery('#empleos_telef_empresa__row').hide();
+          jQuery('#empleos_empleo_relacionado__row').hide();
+        }
+        else {
+          jQuery('#empleos_nombre_empresa__row').show();
+            jQuery('#empleos_tipo_empresa__row').show();
+            jQuery('#empleos_giro_empresa__row').show();
+            jQuery('#empleos_fecha_inicio__row').show();
+            jQuery('#empleos_telef_empresa__row').show();
+            jQuery('#empleos_empleo_relacionado__row').show();
+        }
+    });
+});
+</script>
+
+
+
+<script type="text/javascript">
+  $(document).keypress(
+    function(event){
+     if (event.which == '13') {
+        event.preventDefault();
+      }
+
+
+});
+</script>

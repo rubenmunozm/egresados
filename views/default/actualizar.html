@@ -1,0 +1,183 @@
+{{extend 'layout.html'}}
+<style type="text/css">
+    body{
+    background-image: url("{{=URL('static','images/red5.jpg')}}");
+    font-family: 'Ubuntu', arial, sans-serif;
+    background-size: 100% auto;
+    }
+
+    .hola{
+    	position: relative;
+    	top: -50px;
+    	background-color: white;
+    	border-radius: 22px 22px 22px 22px;
+		-moz-border-radius: 22px 22px 22px 22px;
+		-webkit-border-radius: 22px 22px 22px 22px;
+		border: 3px solid #c4c4c4;
+		-webkit-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+    }
+    .cuadro{
+    	position: relative;
+    	top: -10px;
+    }
+    .amenu{
+      position: relative; 
+      left: -37px;
+    }
+</style>
+
+<div class="container-fluid hola">
+  <br>
+    
+  <div class="row-fluid">
+
+    <div id="mycomponent"class="span6">
+    <h1>Verifíca tus Datos Personales<br> <small>Actualizalos si hay necesidad</small></h1>
+    <br>
+    {{=form}}
+    </div>
+    <div class="span6">
+      <h1>Verifíca tus Datos de Egreso<br> <small>Actualizalos si hay necesidad</small></h1>
+      <br>
+      <h5>Al egresar, ¿Cuanto tiempo tardó en encontrar su primer empleo (en su área de estudios)?</h5>
+      {{=form2}}
+      <br>
+      <div class="amenu"align="center">
+      {{=A(SPAN(_class=""),T("Regresar a Menu"), _href=URL('default','preinicio',user_signature=True), _class='btn btn-large btn-inverse', _style='margin-top: 1em')}}</div>
+    </div>
+
+   </div>
+   <br>
+</div>
+
+<script>
+jQuery(document).ready(function(){
+   if(jQuery('#titulacionSI').prop('checked')){
+        jQuery('#egresos_fecha_titulacion__row').show();
+        jQuery('#egresos_tipo_titulacion__row').show();
+        
+   }
+   else
+   {
+    jQuery('#egresos_fecha_titulacion__row').hide();
+    jQuery('#egresos_tipo_titulacion__row').hide();
+    }
+   jQuery('#titulacionSI').change(function()
+   {
+        if(jQuery('#titulacionSI').prop('checked')){
+            jQuery('#egresos_fecha_titulacion__row').show();
+            jQuery('#egresos_tipo_titulacion__row').show();
+        }
+        else {
+          jQuery('#egresos_fecha_titulacion__row').hide();
+          jQuery('#egresos_tipo_titulacion__row').hide();
+        }
+    });
+});
+</script>
+
+<script>
+jQuery(document).ready(function(){
+   if(jQuery('#titulacionNO').prop('checked')){
+        jQuery('#egresos_fecha_titulacion__row').hide();
+        jQuery('#egresos_tipo_titulacion__row').hide();
+   }
+   else
+   {
+    jQuery('#egresos_fecha_titulacion__row').show();
+    jQuery('#egresos_tipo_titulacion__row').show();
+    }
+   jQuery('#titulacionNO').change(function()
+   {
+        if(jQuery('#titulacionNO').prop('checked')){
+        jQuery('#egresos_fecha_titulacion__row').hide();
+        jQuery('#egresos_tipo_titulacion__row').hide();
+   }
+   else
+   {
+    jQuery('#egresos_fecha_titulacion__row').show();
+    jQuery('#egresos_tipo_titulacion__row').show();
+    }
+    });
+});
+</script>
+
+
+<script>
+jQuery(document).ready(function(){
+   if(jQuery('#posgradoSI').prop('checked')){
+        jQuery('#egresos_posgrado_tipo__row').show();
+        jQuery('#egresos_posgrado_institucion__row').show();
+        jQuery('#egresos_posgrado_areaestudio__row').show();
+        jQuery('#egresos_posgrado_fechatitulacion__row').show();
+   }
+   else
+   {
+    jQuery('#egresos_posgrado_tipo__row').hide();
+    jQuery('#egresos_posgrado_institucion__row').hide();
+    jQuery('#egresos_posgrado_areaestudio__row').hide();
+    jQuery('#egresos_posgrado_fechatitulacion__row').hide();
+    }
+   jQuery('#posgradoSI').change(function()
+   {
+        if(jQuery('#posgradoSI').prop('checked')){
+            jQuery('#egresos_posgrado_tipo__row').show();
+            jQuery('#egresos_posgrado_institucion__row').show();
+            jQuery('#egresos_posgrado_areaestudio__row').show();
+            jQuery('#egresos_posgrado_fechatitulacion__row').show();
+        }
+        else {
+            jQuery('#egresos_posgrado_tipo__row').hide();
+            jQuery('#egresos_posgrado_institucion__row').hide();
+            jQuery('#egresos_posgrado_areaestudio__row').hide();
+            jQuery('#egresos_posgrado_fechatitulacion__row').hide();
+        }
+    });
+});
+</script>
+
+<script>
+jQuery(document).ready(function(){
+   if(jQuery('#posgradoNO').prop('checked')){
+        jQuery('#egresos_posgrado_tipo__row').hide();
+        jQuery('#egresos_posgrado_institucion__row').hide();
+        jQuery('#egresos_posgrado_areaestudio__row').hide();
+        jQuery('#egresos_posgrado_fechatitulacion__row').hide();
+   }
+   else
+   {
+    jQuery('#egresos_posgrado_tipo__row').show();
+    jQuery('#egresos_posgrado_institucion__row').show();
+    jQuery('#egresos_posgrado_areaestudio__row').show();
+    jQuery('#egresos_posgrado_fechatitulacion__row').show();
+    }
+   jQuery('#posgradoNO').change(function()
+   {
+        if(jQuery('#posgradoSI').prop('checked')){
+            jQuery('#egresos_posgrado_tipo__row').show();
+            jQuery('#egresos_posgrado_institucion__row').show();
+            jQuery('#egresos_posgrado_areaestudio__row').show();
+            jQuery('#egresos_posgrado_fechatitulacion__row').show();
+        }
+        else {
+            jQuery('#egresos_posgrado_tipo__row').hide();
+            jQuery('#egresos_posgrado_institucion__row').hide();
+            jQuery('#egresos_posgrado_areaestudio__row').hide();
+            jQuery('#egresos_posgrado_fechatitulacion__row').hide();
+        }
+    });
+});
+</script>
+
+<script type="text/javascript">
+  $(document).keypress(
+    function(event){
+     if (event.which == '13') {
+        event.preventDefault();
+      }
+
+
+});
+</script>

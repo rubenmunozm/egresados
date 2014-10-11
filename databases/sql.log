@@ -1,0 +1,160 @@
+timestamp: 2014-10-07T20:07:17.082000
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    username CHAR(128),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512),
+    correo_trabajo CHAR(50),
+    correo_personal CHAR(50),
+    fecha_nac DATE,
+    telefono CHAR(20),
+    celular CHAR(20),
+    direccion CHAR(50),
+    ciudad CHAR(30),
+    estado CHAR(30),
+    pais CHAR(30)
+);
+success!
+timestamp: 2014-10-07T20:07:17.220000
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2014-10-07T20:07:17.337000
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-10-07T20:07:17.496000
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2014-10-07T20:07:17.654000
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2014-10-07T20:07:17.865000
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2014-10-07T20:07:18.046000
+CREATE TABLE carreras(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre_carrera CHAR(512) NOT NULL
+);
+success!
+timestamp: 2014-10-07T20:07:18.474000
+CREATE TABLE tiempo_encontrar_empleo(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tiempos CHAR(512) NOT NULL
+);
+success!
+timestamp: 2014-10-07T20:07:18.827000
+CREATE TABLE tipos_titulacion(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tipos CHAR(512) NOT NULL
+);
+success!
+timestamp: 2014-10-07T20:07:19.253000
+CREATE TABLE tipos_posgrado(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tipos CHAR(512) NOT NULL
+);
+success!
+timestamp: 2014-10-07T20:07:19.504000
+CREATE TABLE banderas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    primera_completa CHAR(1)
+);
+success!
+timestamp: 2014-10-07T20:07:19.780000
+CREATE TABLE egresos(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    tiempo_encontrar_empleo INTEGER REFERENCES tiempo_encontrar_empleo (id) ON DELETE CASCADE,
+    carrera INTEGER REFERENCES carreras (id) ON DELETE CASCADE,
+    fecha_egreso CHAR(512),
+    titulacion CHAR(512),
+    fecha_titulacion CHAR(512),
+    tipo_titulacion INTEGER REFERENCES tipos_titulacion (id) ON DELETE CASCADE,
+    posgrado CHAR(512),
+    posgrado_tipo INTEGER REFERENCES tipos_posgrado (id) ON DELETE CASCADE,
+    posgrado_institucion CHAR(50),
+    posgrado_areaestudio CHAR(50),
+    posgrado_fechatitulacion CHAR(512)
+);
+success!
+timestamp: 2014-10-07T20:07:20
+CREATE TABLE tipos_empresa(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tipos CHAR(512) NOT NULL
+);
+success!
+timestamp: 2014-10-07T20:07:20.187000
+CREATE TABLE giros_empresa(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    giros CHAR(512) NOT NULL
+);
+success!
+timestamp: 2014-10-07T20:07:20.552000
+CREATE TABLE empleos(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    laboralmente_activo CHAR(512),
+    estado_empleo CHAR(512),
+    nombre_empresa CHAR(50),
+    tipo_empresa INTEGER REFERENCES tipos_empresa (id) ON DELETE CASCADE,
+    giro_empresa INTEGER REFERENCES giros_empresa (id) ON DELETE CASCADE,
+    empleo_relacionado CHAR(512),
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    telef_empresa CHAR(30),
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-10-07T20:07:21.122000
+CREATE TABLE banner(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    imagen CHAR(512)
+);
+success!
+timestamp: 2014-10-07T20:07:21.355000
+CREATE TABLE anuncios(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pagina INTEGER UNIQUE,
+    titulo_anuncio CHAR(512) NOT NULL,
+    imagen CHAR(512) NOT NULL,
+    anuncio TEXT NOT NULL
+);
+success!

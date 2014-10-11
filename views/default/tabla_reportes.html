@@ -1,0 +1,117 @@
+{{extend 'layout_full.html'}}
+<style type="text/css">
+    .ui-jqgrid tr.jqgrow td {
+    height: 50px;
+    white-space: normal;
+}
+   th.ui-th-column div{
+        white-space:normal !important;
+        height:auto !important;
+        padding:2px;
+    } 
+    
+</style>
+<style type="text/css">
+    body{
+    background-image: url("{{=URL('static','images/red4.jpg')}}");
+    font-family: 'Ubuntu', arial, sans-serif;
+    background-size: 100% auto;
+    }
+
+    .hola{
+      position: relative;
+      top: -50px;
+      background-color: white;
+      border-radius: 22px 22px 22px 22px;
+    -moz-border-radius: 22px 22px 22px 22px;
+    -webkit-border-radius: 22px 22px 22px 22px;
+    border: 3px solid #c4c4c4;
+    -webkit-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+-moz-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
+    }
+    .cuadro{
+      position: relative;
+      top: -50px;
+    }
+    .tablita{
+      position: relative;
+      top: -50px;
+    }
+</style>
+
+<div class="cuadro"><br>
+    <h2>Se despliegan solo Usuarios que ya registraron su Información<br><small>Utilize los filtros para obtener la información deseada / Los empleos son los actuales</small></h2>
+      
+</div>
+
+<script type="text/javascript" >
+jQuery(document).ready(function(){
+  jQuery("#list").jqGrid({
+    url:'{{=URL(r=request,f='call',args=['json','tabla_ajax'])}}',
+    data: "{}",
+    datatype: 'json',
+    mtype: 'GET',
+    contentType: "application/json; charset=utf-8",
+    {{if auth.has_membership('admin'):}}
+            cellEdit: false,
+    {{else:}}
+            cellEdit: false,
+    {{pass}}
+    cellsubmit:'remote',
+    cellurl: '{{=URL(a='presupuestoapp', r=request, f='call', args=['json','save_cell'])}}',
+    complete: function(jsondata, stat) {
+        if (stat == "success") {
+            var thegrid = jQuery("#list")[0];
+            thegrid.addJSONData(JSON.parse(jsondata.responseText).d);
+        }
+    },
+    colNames:[ 'Nombre','Apellidos','e-mail','Matrícula','Fecha de Nacimiento','Teléfono','Celular','Dirección','Ciudad','Estado','Pais','Carrera','Fecha de Egreso','Está Titulado','Fecha de Titulación','Tipo Titulación','Está Empleado','Nombre Empresa','Tipo Empresa','Giro Empresa','Fecha Inicio Laboral','Telefono Empresa'],
+    colModel:[
+        {name:'first_name',index:'first_name', width:90, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'last_name',index:'last_name', width:110, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'email',index:'email', width:150, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'username',index:'username', width:100, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'fecha_nac',index:'fecha_nac', width:110, searchoptions:{sopt:['eq', 'ne', 'le', 'ge', 'gt', 'lt']}},
+        {name:'telefono',index:'telefono', width:100, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'celular',index:'celular', width:100, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'direccion',index:'direccion', width:150, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'ciudad',index:'ciudad', width:115, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'estado',index:'estado', width:115, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'pais',index:'pais', width:115, searchoptions:{sopt:['cn','nc','eq']}},
+
+        {name:'carrera',index:'carrera', width:150, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'fecha_egreso',index:'fecha_egreso', width:90, searchoptions:{sopt: ['eq', 'ne', 'le', 'ge', 'gt', 'lt']}},
+        {name:'titulacion',index:'titulacion', width:90, searchoptions:{sopt:['eq']}},
+        {name:'fecha_titulacion',index:'fecha_titulacion', width:90,searchoptions:{sopt: ['eq', 'ne', 'le', 'ge', 'gt', 'lt']}},        
+        {name:'tipo_titulacion',index:'tipo_titulacion', width:105, searchoptions:{sopt:['eq','ne']}},
+
+        {name:'laboralmente_activo',index:'laboralmente_activo',width:70, searchoptions:{sopt:['eq']}},
+        {name:'nombre_empresa',index:'nombre_empresa', width:115, searchoptions:{sopt:['cn','nc','eq']}},
+        {name:'tipo_empresa',index:'tipo_empresa', width:115, searchoptions:{sopt:['eq']}},
+        {name:'giro_empresa',index:'giro_empresa', width:115, searchoptions:{sopt:['eq']}},
+        {name:'fecha_inicio',index:'fecha_inicio', width:90, searchoptions:{sopt:['eq', 'ne', 'le', 'ge', 'gt', 'lt']}},
+        {name:'telef_empresa',index:'telef_empresa', width:100, searchoptions:{sopt:['cn','nc','eq']}},
+    ],
+    pager: '#pager',
+    rowNum:10,
+    rowList:[10,20,30],
+    sortname: 'id',
+    sortorder: 'desc',
+    viewrecords: true,
+    caption: 'Egresados',
+    altRows:true,
+    height: 'auto',
+    width: 'auto'
+ 
+  });
+
+  jQuery("#list").jqGrid('filterToolbar',{searchOperators : true, autosearch : true, stringResult: true, defaultSearch: "cn" });
+});
+</script>
+
+<br>
+<div class="tablita">
+<table id="list"></table>
+<div id="pager"></div>
+</div>
