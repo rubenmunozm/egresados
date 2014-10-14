@@ -16,13 +16,13 @@ from hashlib import md5
 import hmac
 import math
 
-@auth.requires_login()
+@auth.requires_membership('admin')
 def grid_user():
     db.auth_user.id.readable = False
     grid = SQLFORM.grid(db.auth_user,headers={'auth_user.fecha_nac':'Fecha de nacimiento'},exportclasses=dict(xml=False, html=False, csv_with_hidden_cols=False, tsv_with_hidden_cols=False,tsv=False, json=False))
     return locals()
 
-@auth.requires_login()
+@auth.requires_membership('admin')
 def grid_egresos():
     db.egresos.id.readable = False
     db.egresos.usuario.represent = lambda id,row: db.auth_user(id).first_name +' '+ db.auth_user(id).last_name 
@@ -30,14 +30,14 @@ def grid_egresos():
                              tsv_with_hidden_cols=False,tsv=False, json=False))
     return locals()
 
-@auth.requires_login()
+@auth.requires_membership('admin')
 def grid_empleos():
     db.empleos.id.readable = False
     grid = SQLFORM.grid(db.empleos,headers={'empleos.laboralmente_activo':'Tiene Empleo:','empleos.empleo_relacionado':'Relación Empleo c/ Estudios','empleos.telef_empresa':'Telefono de Empresa'},exportclasses=dict(xml=False, html=False, csv_with_hidden_cols=False,
                              tsv_with_hidden_cols=False,tsv=False, json=False))
     return locals()
 
-@auth.requires_login()
+@auth.requires_membership('admin')
 def grid_empleos_act():
     db.empleos.id.readable = False
     query = (db.empleos.estado_empleo=='ACTUAL')&(db.empleos.laboralmente_activo=='SI')
@@ -45,14 +45,15 @@ def grid_empleos_act():
                              tsv_with_hidden_cols=False,tsv=False, json=False))
     return locals()
 
-@auth.requires_login()
+@auth.requires_membership('admin')
 def adm_web():
     banner = SQLFORM.grid(db.banner,csv=False)
     anuncios = SQLFORM.grid(db.anuncios,csv=False)
     carreras = SQLFORM.grid(db.carreras,exportclasses=dict(xml=False, html=False, csv_with_hidden_cols=False,
                              tsv_with_hidden_cols=False,tsv=False, json=False))
     return locals()
-@auth.requires_login()
+
+@auth.requires_membership('admin')
 def tabla_reportes():
     # index shows the jqgrid table
     #jqueryui enabled in layout.html by removing the comment which stops it from loading.
@@ -68,13 +69,13 @@ def tabla_reportes():
     response.files.append(URL(a='egresados', r=request,c='static/css/themes/smoothness',f='jquery.ui.theme.css'))
     return locals()
 
-@auth.requires_login()
+@auth.requires_membership('admin')
 def correos():
     if request.vars['semando'] == 'bien':
         response.flash = 'Correos enviados!'
     return locals()
 
-@auth.requires_login()
+@auth.requires_membership('admin')
 def recordatorio():
     for row in db().select(db.auth_user.id,db.auth_user.email,db.auth_user.first_name,db.auth_user.username,distinct=True):
         info_registrada = db(db.banderas.usuario==row.id).select(db.banderas.primera_completa).first()
@@ -105,7 +106,7 @@ def recordatorio():
     
     return locals()
 
-@auth.requires_login()
+@auth.requires_membership('admin')
 def cargar_archivo():
     form = FORM(INPUT(_type='file', _name='data'), INPUT(_type='submit'))
     if form.process().accepted:
@@ -142,11 +143,12 @@ def error_correos():
     return locals()
 def error_csv():
     return locals()
-@auth.requires_login()
+
+@auth.requires_membership('admin')
 def reportesexp_menu():
     return locals()
 
-
+@auth.requires_membership('admin')
 def reportes_exp():
     query = []
     if request.vars['sintitulo']:
@@ -671,7 +673,7 @@ def tabla_ajax():
     #db.licencias.sistema_libranza.represent = lambda v: v.name
     #try:
         
-    fields = ['first_name','last_name','email','username','fecha_nac','telefono','celular','direccion','ciudad','estado','pais','carrera','fecha_egreso','titulacion','fecha_titulacion','tipo_titulacion','laboralmente_activo','nombre_empresa','tipo_empresa','giro_empresa','fecha_inicio','telef_empresa']
+    fields = ['first_name','last_name','email','username','fecha_nac','telefono','celular','direccion','ciudad','estado','pais','carrera','fecha_egreso','titulacion','fecha_titulacion','tipo_titulacion','posgrado','posgrado_tipo','posgrado_institucion','posgrado_areaestudio','posgrado_fechatitulacion','tiempo_encontrar_empleo','laboralmente_activo','nombre_empresa','tipo_empresa','giro_empresa','fecha_inicio','telef_empresa']
     rows = []
     page = int(request.vars.page)  #the page number
     pagesize = int(request.vars.rows)        
@@ -683,21 +685,19 @@ def tabla_ajax():
         orderby = ~orderby
     
     #variables = request.vars
-    variables=[]
-    variables_low=[]
-    for var in request.vars:
-        variables_low.append(var)
-        variables.append(request.vars[var])
+    # variables=[]
+    # variables_low=[]
+    # for var in request.vars:
+    #     variables_low.append(var)
+    #     variables.append(request.vars[var])
 
     #variables_low.append(var.values())
     queries = []
-    queries_puntas = []
-    lista_egresados = ['fecha_egreso','titulacion','fecha_titulacion','tipo_titulacion']
-    #lista_empleos = ['laboralmente_activo','nombre_empresa','tipo_empresa','giro_empresa','fecha_inicio','telef_empresa']
+    #queries_puntas = []
+    lista_egresados = ['fecha_egreso','titulacion','fecha_titulacion','tipo_titulacion','posgrado','posgrado_tipo','posgrado_institucion','posgrado_areaestudio','posgrado_fechatitulacion','tiempo_encontrar_empleo']
     lista_empleados = ['laboralmente_activo','nombre_empresa','tipo_empresa','giro_empresa','fecha_inicio','telef_empresa']
     #dbg.set_trace() # stop here
     if request.vars["_search"] == "true":
-
         filtros_str = request.vars['filters']
         filtro = eval( filtros_str )
         
@@ -755,9 +755,19 @@ def tabla_ajax():
 
             elif dato['op'] == 'cn': #op de string
                  if dato['field'] in lista_egresados:
-                     queries.append(  db.egresos[dato['field']].contains(dato['data']) )
+                    if dato['field'] == "tipo_titulacion":
+                        queries.append( db.tipos_titulacion['tipos'].contains(dato['data']) )
+                    elif dato['field'] == "posgrado_tipo":
+                        queries.append( db.tipos_posgrado['tipos'].contains(dato['data']) )
+                    else:
+                        queries.append(  db.egresos[dato['field']].contains(dato['data']) )
                  elif dato['field'] in lista_empleados:
-                     queries.append(  db.empleos[dato['field']].contains(dato['data']) )
+                    if dato['field'] == "tipo_empresa":
+                        queries.append( db.tipos_empresa['tipos'].contains(dato['data']) )
+                    elif dato['field'] == "giro_empresa":
+                        queries.append( db.giros_empresa['giros'].contains(dato['data']) )
+                    else:
+                        queries.append(  db.empleos[dato['field']].contains(dato['data']) )
                  elif dato['field'] == 'carrera': 
                     queries.append(  db.carreras['nombre_carrera'].contains(dato['data']) )
                  else:
@@ -765,9 +775,19 @@ def tabla_ajax():
 
             elif dato['op'] == 'nc': #op de string
                 if dato['field'] in lista_egresados:
-                     queries.append(  ~db.egresos[dato['field']].contains(dato['data']) )
+                    if dato['field'] == "tipo_titulacion":
+                        queries.append( ~db.tipos_titulacion['tipos'].contains(dato['data']) )
+                    elif dato['field'] == "posgrado_tipo":
+                        queries.append( ~db.tipos_posgrado['tipos'].contains(dato['data']) )
+                    else:
+                        queries.append(  ~db.egresos[dato['field']].contains(dato['data']) )
                 elif dato['field'] in lista_empleados:
-                     queries.append(  ~db.empleos[dato['field']].contains(dato['data']) )
+                    if dato['field'] == "tipo_empresa":
+                        queries.append( ~db.tipos_empresa['tipos'].contains(dato['data']) )
+                    elif dato['field'] == "giro_empresa":
+                        queries.append( ~db.giros_empresa['giros'].contains(dato['data']) )
+                    else:
+                        queries.append(  ~db.empleos[dato['field']].contains(dato['data']) )
                 elif dato['field'] == 'carrera': 
                     queries.append(  ~db.carreras['nombre_carrera'].contains(dato['data']) )
                 else:
@@ -785,31 +805,39 @@ def tabla_ajax():
         query = (db.auth_user.id == db.auth_user.id)
         #query_puntas = query
     
-    join = (db.egresos.usuario == db.auth_user.id) & (db.empleos.usuario == db.auth_user.id)&(db.banderas.usuario == db.auth_user.id)&(db.egresos.carrera == db.carreras.id)
+    join = (db.egresos.usuario == db.auth_user.id) & (db.empleos.usuario == db.auth_user.id)&(db.banderas.usuario == db.auth_user.id)&(db.egresos.carrera == db.carreras.id)&(db.egresos.tipo_titulacion == db.tipos_titulacion.id)&(db.egresos.posgrado_tipo == db.tipos_posgrado.id)&(db.empleos.tipo_empresa == db.tipos_empresa.id)&(db.empleos.giro_empresa == db.giros_empresa.id)
     #for r in db(query_puntas)(query)(join).select(db.auth_user.ALL, limitby=limitby,orderby=orderby, distinct=True):
-    for r in db(join)(query)(db.banderas.primera_completa==True).select(db.auth_user.ALL, limitby=limitby,orderby=orderby, distinct=True):
+    for r in db(join)(query)(db.banderas.primera_completa==True)(db.empleos.estado_empleo=='ACTUAL').select(db.auth_user.ALL, limitby=limitby,orderby=orderby, distinct=True):
         vals = []
-        ident = r['id']
+        #ident = r['id']
 
-        lleno_info=db(db.banderas.usuario==r.id).select().first()
+        #lleno_info=db(db.banderas.usuario==r.id).select().first()
         egre=db(db.egresos.usuario == r.id).select().first()
         emple=db(db.empleos.usuario == r.id)(db.empleos.estado_empleo=='ACTUAL').select(orderby=~db.empleos.created_on).first()
         
         for f in fields:
             if f in lista_egresados:
-                vals.append(egre[f])
+                if f == 'tipo_titulacion':
+                    vals.append(egre.tipo_titulacion.tipos)
+                elif f == 'tiempo_encontrar_empleo':
+                    vals.append(egre.tiempo_encontrar_empleo.tiempos)
+                elif f == 'posgrado_tipo':
+                    vals.append(egre.posgrado_tipo.tipos)
+                else:
+                    vals.append(egre[f])
             elif f in lista_empleados:
-                vals.append(emple[f])
+                if f == 'tipo_empresa':
+                    vals.append(emple.tipo_empresa.tipos)
+                elif f == 'giro_empresa':
+                    vals.append(emple.giro_empresa.giros)
+                else:
+                    vals.append(emple[f])
             elif f == 'carrera':
                 vals.append(egre.carrera.nombre_carrera)
             #elif f == 'editar':
              #   vals.append( A(SPAN(_class='icon icon-file'),T("Historial"), _href=URL('plugin_servicios','presupuestos_adjuntos', args=[ident],user_signature=True), _class='btn btn-mini btn-primary', _target="_blank") +A(SPAN(_class="icon-edit"),T("Edicion"), _href=URL('plugin_servicios','presupuesto_editar', args=[ident], user_signature=True),_TARGET="blank", _class='btn btn-mini btn-warning', _style='margin-top: 0em') )
             else:
-                rep = db.auth_user[f].represent
-                if rep:
-                    vals.append(rep(r[f]))
-                else:
-                    vals.append(r[f])
+                vals.append(r[f])
         rows.append(dict(id=r.id,cell=vals))
     
     total = db(db.auth_user.id>0).count()

@@ -44,7 +44,7 @@ if auth.has_membership('admin'):
                       (T('Tabla Info. Personal de Egresados (Usuarios)'), False, URL('default', 'grid_user',user_signature=True),),
                       (T('Tabla Egresos'), False, URL('default', 'grid_egresos',user_signature=True),),
 
-                      (T('Tabla Empleos'), False, URL('default', '#',user_signature=True),
+                      (T('Tabla Empleos'), False, URL(),
                         [
                           (T('Tabla Empleos (Todos)'), False, URL('default', 'grid_empleos',user_signature=True),),
                           (T('Tabla Empleos Actuales'), False, URL('default', 'grid_empleos_act',user_signature=True),),

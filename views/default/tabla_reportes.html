@@ -18,30 +18,18 @@
     background-size: 100% auto;
     }
 
-    .hola{
-      position: relative;
-      top: -50px;
-      background-color: white;
-      border-radius: 22px 22px 22px 22px;
-    -moz-border-radius: 22px 22px 22px 22px;
-    -webkit-border-radius: 22px 22px 22px 22px;
-    border: 3px solid #c4c4c4;
-    -webkit-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
--moz-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
-box-shadow: 10px 10px 75px -4px rgba(0,0,0,0.75);
-    }
     .cuadro{
       position: relative;
-      top: -50px;
+      top: -90px;
     }
     .tablita{
       position: relative;
-      top: -50px;
+      top: -90px;
     }
 </style>
 
 <div class="cuadro"><br>
-    <h2>Se despliegan solo Usuarios que ya registraron su Información<br><small>Utilize los filtros para obtener la información deseada / Los empleos son los actuales</small></h2>
+    <h2 align="center">Se despliegan solo los usuarios que ya registraron su información.<br><small style="color:#cfcfcf;">Se muestra la situación laboral actual (Empleo Actual - Desemplado Actualmente)</small></h2>
       
 </div>
 
@@ -66,7 +54,7 @@ jQuery(document).ready(function(){
             thegrid.addJSONData(JSON.parse(jsondata.responseText).d);
         }
     },
-    colNames:[ 'Nombre','Apellidos','e-mail','Matrícula','Fecha de Nacimiento','Teléfono','Celular','Dirección','Ciudad','Estado','Pais','Carrera','Fecha de Egreso','Está Titulado','Fecha de Titulación','Tipo Titulación','Está Empleado','Nombre Empresa','Tipo Empresa','Giro Empresa','Fecha Inicio Laboral','Telefono Empresa'],
+    colNames:[ 'Nombre','Apellidos','e-mail','Matrícula','Fecha de Nacimiento','Teléfono','Celular','Dirección','Ciudad','Estado','Pais','Carrera','Fecha de Egreso','Está Titulado','Fecha de Titulación','Tipo Titulación','Cursó Posgrado','Tipo de Posgrado','Institución donde se cursó el posgrado','Area de Estudio del Posgrado','Fecha de Titulación Posgrado','Tiempo en encontrar primer empleo','Está Empleado','Nombre Empresa','Tipo Empresa','Giro Empresa','Fecha Inicio Laboral','Telefono Empresa'],
     colModel:[
         {name:'first_name',index:'first_name', width:90, searchoptions:{sopt:['cn','nc','eq']}},
         {name:'last_name',index:'last_name', width:110, searchoptions:{sopt:['cn','nc','eq']}},
@@ -84,12 +72,19 @@ jQuery(document).ready(function(){
         {name:'fecha_egreso',index:'fecha_egreso', width:90, searchoptions:{sopt: ['eq', 'ne', 'le', 'ge', 'gt', 'lt']}},
         {name:'titulacion',index:'titulacion', width:90, searchoptions:{sopt:['eq']}},
         {name:'fecha_titulacion',index:'fecha_titulacion', width:90,searchoptions:{sopt: ['eq', 'ne', 'le', 'ge', 'gt', 'lt']}},        
-        {name:'tipo_titulacion',index:'tipo_titulacion', width:105, searchoptions:{sopt:['eq','ne']}},
+        {name:'tipo_titulacion',index:'tipo_titulacion', width:105, searchoptions:{sopt:['cn','nc']}},
 
+        {name:'posgrado',index:'posgrado', width:105, searchoptions:{sopt:['eq','ne']}},
+        {name:'posgrado_tipo',index:'posgrado_tipo', width:105, searchoptions:{sopt:['cn','nc']}},
+        {name:'posgrado_institucion',index:'posgrado_institucion', width:122, searchoptions:{sopt:['cn','nc']}},
+        {name:'posgrado_areaestudio',index:'posgrado_areaestudio', width:122, searchoptions:{sopt:['cn','nc']}},
+        {name:'posgrado_fechatitulacion',index:'posgrado_fechatitulacion', width:90, searchoptions:{sopt: ['eq', 'ne', 'le', 'ge', 'gt', 'lt']}},
+
+        {name:'tiempo_encontrar_empleo',index:'tiempo_encontrar_empleo',width:125, searchoptions:{sopt:['eq']}},
         {name:'laboralmente_activo',index:'laboralmente_activo',width:70, searchoptions:{sopt:['eq']}},
         {name:'nombre_empresa',index:'nombre_empresa', width:115, searchoptions:{sopt:['cn','nc','eq']}},
-        {name:'tipo_empresa',index:'tipo_empresa', width:115, searchoptions:{sopt:['eq']}},
-        {name:'giro_empresa',index:'giro_empresa', width:115, searchoptions:{sopt:['eq']}},
+        {name:'tipo_empresa',index:'tipo_empresa', width:115, searchoptions:{sopt:['cn','nc']}},
+        {name:'giro_empresa',index:'giro_empresa', width:115, searchoptions:{sopt:['cn','nc']}},
         {name:'fecha_inicio',index:'fecha_inicio', width:90, searchoptions:{sopt:['eq', 'ne', 'le', 'ge', 'gt', 'lt']}},
         {name:'telef_empresa',index:'telef_empresa', width:100, searchoptions:{sopt:['cn','nc','eq']}},
     ],
@@ -99,7 +94,7 @@ jQuery(document).ready(function(){
     sortname: 'id',
     sortorder: 'desc',
     viewrecords: true,
-    caption: 'Egresados',
+    caption: 'Utilice los filtros para obtener la información deseada',
     altRows:true,
     height: 'auto',
     width: 'auto'
